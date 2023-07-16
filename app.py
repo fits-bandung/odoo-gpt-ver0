@@ -31,8 +31,7 @@ if "stored_session" not in st.session_state:
 if "download_str" not in st.session_state:
     st.session_state["download_str"] = []  
 
-    # st.session_state["download_str"] = []
-
+    
 
 # Define function to start a new chat
 def new_chat():
@@ -68,6 +67,8 @@ def show_chat_histories(user_input):
     user = "user"
     bot = "Odoo-GPT"
 
+    
+    
     if len(past) > 0:
         for i in range(0, len(past)) :
             with st.chat_message(user):
@@ -82,7 +83,7 @@ def show_chat_histories(user_input):
     
 
     
-
+#SIDEBAR 
 # Set up sidebar with various options
 with st.sidebar.expander("🛠️ ", expanded=False):
     # Option to preview memory store
@@ -99,9 +100,13 @@ with st.sidebar.expander("🛠️ ", expanded=False):
     MODEL = st.selectbox(label='Model', options=['gpt-3.5-turbo','text-davinci-003','text-davinci-002','code-davinci-002'])
     K = st.number_input(' (#)Summary of prompts to consider',min_value=3,max_value=1000)
 
+
+#BODY
 # Set up the Streamlit app layout
 st.title("🤖 Odoo-GPT")
 st.subheader("Integrasi Odoo-Whatsapp dengan optimalisasi GPT-3.5")
+
+
 
 # Ask the user to enter their OpenAI API key
 API_O = st.sidebar.text_input("API-KEY", type="password")
@@ -112,7 +117,11 @@ if API_O == "":
              Saat ini menggunakan API-KEY default.             
              """)
 
- 
+
+with st.expander("📝 ENTITY_MEMORY_CONVERSATION_TEMPLATE", expanded=False):
+    st.write(ENTITY_MEMORY_CONVERSATION_TEMPLATE)
+    st.write(ConversationEntityMemory)
+
 # Session state storage would be ideal
 if API_O:
     # Create an OpenAI instance
@@ -139,23 +148,29 @@ else:
 
 
 
-
-
 #Kirim Pesan 
+chat_history_expander = st.expander("💬 Chat History", expanded=True)
+chat_history_expander.empty()
+
 user_input = st.chat_input(placeholder="Ketik pesan disini ...")  
 
-if user_input:
-    show_chat_histories(user_input)
+#with st.expander("💬 Chat History", expanded=True):
+with chat_history_expander: 
+    if user_input:
+        show_chat_histories(user_input)
         
         
-    # Add a button to start a new chat
-    st.sidebar.button("New Chat", on_click = new_chat, type='primary')
-
+  
     
 
   
 
+
+#SIDEBAR
 # Display stored conversation sessions in the sidebar
+if st.session_state['past'] and st.session_state['generated']:
+    st.sidebar.button("New Chat", on_click = new_chat, type='primary')
+
 for i, sublist in enumerate(st.session_state.stored_session):
         with st.sidebar.expander(label= f"Conversation-Session:{i}"):
             st.write(sublist)
